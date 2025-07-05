@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CGPA Calculator (MG University Style)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f8f8f8;
+        }
+        h2 {
+            color: #333;
+        }
+        label, select, input {
+            margin: 6px 4px;
+        }
+        .semester-block {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .btn {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>CGPA Calculator (MG University Style)</h2>
+
+    <label>Select Number of Semesters:</label>
+    <select id="semesters">
+        <!-- Options 1 to 10 -->
+        <script>
+            for(let i = 1; i <= 10; i++) {
+                document.write(`<option value="${i}">${i}</option>`);
+            }
+        </script>
+    </select>
+
+    <label>Number of Papers per Semester:</label>
+    <select id="papers">
+        <!-- Options 1 to 10 -->
+        <script>
+            for(let i = 1; i <= 10; i++) {
+                document.write(`<option value="${i}">${i}</option>`);
+            }
+        </script>
+    </select>
+
+    <button class="btn" onclick="generateForm()">Generate Form</button>
+
+    <form id="cgpaForm" onsubmit="calculateCGPA(event)">
+        <div id="formContainer"></div>
+        <button type="submit" class="btn" style="display:none;" id="submitBtn">Calculate CGPA</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        function generateForm() {
+            const semesters = parseInt(document.getElementById('semesters').value);
+            const papers = parseInt(document.getElementById('papers').value);
+            const container = document.getElementById('formContainer');
+            container.innerHTML = "";
+
+            for (let i = 1; i <= semesters; i++) {
+                const semDiv = document.createElement('div');
+                semDiv.className = 'semester-block';
+                semDiv.innerHTML = `<h3>Semester ${i}</h3>`;
+                for (let j = 1; j <= papers; j++) {
+                    semDiv.innerHTML += `
+                        <label>Paper ${j} Credit:</label>
+                        <input type="number" name="credit${i}_${j}" min="0" step="0.1" required>
+                        <label>Grade Point:</label>
+                        <input type="number" name="grade${i}_${j}" min="0" max="10" step="0.1" required><br>
+                    `;
+                }
+                container.appendChild(semDiv);
+            }
+
+            document.getElementById('submitBtn').style.display = 'inline-block';
+        }
+
+        function calculateCGPA(event) {
+            event.preventDefault();
+
+            const form = document.forms['cgpaForm'];
+            let totalCredits = 0;
+            let totalPoints = 0;
+
+            for (let element of form.elements) {
+                if (element.name.startsWith('credit')) {
+                    const gradeName = element.name.replace('credit', 'grade');
+                    const credit = parseFloat(element.value);
+                    const grade = parseFloat(form.elements[gradeName].value);
+
+                    if (!isNaN(credit) && !isNaN(grade)) {
+                        totalCredits += credit;
+                        totalPoints += credit * grade;
+                    }
+                }
+            }
+
+            const cgpa = totalPoints / totalCredits;
+            document.getElementById('result').innerHTML = `🎓 Your CGPA is: <strong>${cgpa.toFixed(2)}</strong>`;
+        }
+    </script>
+
+</body>
+</html>
